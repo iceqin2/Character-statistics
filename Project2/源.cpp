@@ -1,15 +1,16 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <iomanip>
+ï»¿#pragma comment(linker,"\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 #include <windows.h>
-#include <io.h>
-#include <fcntl.h>
+#include <commctrl.h>
+#include <string>
+#include <fstream>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 
 
-/* ÈËÎïĞÅÏ¢ */
+/* äººç‰©ä¿¡æ¯ */
 struct PersonInfo {
     int id;
     const wchar_t* displayName;
@@ -17,7 +18,7 @@ struct PersonInfo {
 };
 
 
-/* ÈËÎï³öÏÖÎ»ÖÃ */
+/* äººç‰©å‡ºç°ä½ç½® */
 struct PositionNode {
 
     long long charPos;
@@ -36,7 +37,7 @@ struct PositionNode {
 };
 
 
-/* É¢ÁĞ±íÖĞµÄÈËÎï½Úµã */
+/* æ•£åˆ—è¡¨ä¸­çš„äººç‰©èŠ‚ç‚¹ */
 struct PersonNode {
 
     int id;
@@ -77,7 +78,7 @@ struct PersonNode {
 };
 
 
-/* ×Ô¶¨ÒåÉ¢ÁĞ±í */
+/* è‡ªå®šä¹‰æ•£åˆ—è¡¨ */
 class HashTable {
 
 private:
@@ -113,7 +114,7 @@ private:
 
 public:
 
-    /* ¹¹Ôìº¯Êı */
+    /* æ„é€ å‡½æ•° */
     HashTable() {
 
         for (
@@ -127,14 +128,14 @@ public:
     }
 
 
-    /* Îö¹¹º¯Êı */
+    /* ææ„å‡½æ•° */
     ~HashTable() {
 
         clear();
     }
 
 
-    /* Çå¿ÕÉ¢ÁĞ±í */
+    /* æ¸…ç©ºæ•£åˆ—è¡¨ */
     void clear() {
 
         for (
@@ -175,11 +176,11 @@ public:
 
 
     /*
-     * ¸ù¾İUTF-8Ãû³Æ²éÕÒÈËÎï
+     * æ ¹æ®UTF-8åç§°æŸ¥æ‰¾äººç‰©
      *
-     * Æ½¾ùÊ±¼ä¸´ÔÓ¶È£ºO(1)
+     * å¹³å‡æ—¶é—´å¤æ‚åº¦ï¼šO(1)
      *
-     * ×î»µÊ±¼ä¸´ÔÓ¶È£ºO(n)
+     * æœ€åæ—¶é—´å¤æ‚åº¦ï¼šO(n)
      */
     PersonNode* find(
         const string& name
@@ -206,7 +207,7 @@ public:
 
 
     /*
-     * ²åÈëÈËÎï
+     * æ’å…¥äººç‰©
      */
     PersonNode* insert(
         int id,
@@ -251,7 +252,7 @@ public:
 
 
     /*
-     * Ìí¼ÓÒ»´ÎÈËÎï³öÏÖ¼ÇÂ¼
+     * æ·»åŠ ä¸€æ¬¡äººç‰©å‡ºç°è®°å½•
      */
     void addOccurrence(
         int id,
@@ -306,285 +307,188 @@ public:
 
 
     /*
-     * ¸ù¾İÈËÎïÃû³Æ²éÑ¯
+     * æ ¹æ®äººç‰©åç§°æŸ¥è¯¢
      *
-     * ²éÑ¯¹ı³ÌÖ±½ÓÊ¹ÓÃÉ¢ÁĞ±í¡£
+     * æŸ¥è¯¢è¿‡ç¨‹ç›´æ¥ä½¿ç”¨æ•£åˆ—è¡¨ã€‚
      */
-    void query(
-        const string& searchName
-    ) {
+     // æŸ¥è¯¢å¹¶è¿”å›ç»“æœå­—ç¬¦ä¸²ï¼ˆGUIç‰ˆï¼Œä¸å†è¾“å‡ºåˆ°æ§åˆ¶å°ï¼‰
+    wstring queryResult(const string& searchName) {
+        PersonNode* person = find(searchName);
+        if (person == NULL) return L"æ²¡æœ‰æ‰¾åˆ°è¯¥äººç‰©ï¼\r\n";
 
-        PersonNode* person =
-            find(searchName);
+        wostringstream woss;
+        woss << L"========================================\r\n";
+        woss << L"äººç‰©ï¼š" << person->name << L"\r\n";
+        woss << L"å‡ºç°æ¬¡æ•°ï¼š" << person->count << L"\r\n";
+        woss << L"----------------------------------------\r\n";
+        woss << L"å‡ºç°ä½ç½®ï¼š\r\n";
 
-
-        if (person == NULL) {
-
-            wcout << L"\nÃ»ÓĞÕÒµ½¸ÃÈËÎï¡£\n";
-
-            return;
-        }
-
-
-        wcout << L"\n";
-
-        wcout
-            << L"========================================\n";
-
-
-        wcout
-            << L"ÈËÎï£º"
-            << person->name
-            << L"\n";
-
-
-        wcout
-            << L"³öÏÖ´ÎÊı£º"
-            << person->count
-            << L"\n";
-
-
-        wcout
-            << L"----------------------------------------\n";
-
-
-        wcout
-            << L"³öÏÖÎ»ÖÃ£º\n";
-
-
-        PositionNode* p =
-            person->positions;
-
-
+        PositionNode* p = person->positions;
         int number = 1;
-
-
         while (p != NULL) {
-
-            wcout
-                << L"µÚ "
-                << number
-                << L" ´Î£º";
-
-            wcout
-                << L"×Ö·ûÎ»ÖÃ = "
-                << p->charPos;
-
-            wcout
-                << L"£¬×Ö½ÚÎ»ÖÃ = "
-                << p->bytePos
-                << L"\n";
-
-
+            woss << L"ç¬¬ " << number << L" æ¬¡ï¼šå­—ç¬¦ä½ç½® = " << p->charPos
+                << L"ï¼Œå­—èŠ‚ä½ç½® = " << p->bytePos << L"\r\n";
             p = p->next;
-
             number++;
         }
-
-
-        wcout
-            << L"========================================\n";
+        woss << L"========================================\r\n";
+        return woss.str();
     }
 
 
     /*
-     * ÏÔÊ¾É¢ÁĞ±íĞÅÏ¢
+     * æ˜¾ç¤ºæ•£åˆ—è¡¨ä¿¡æ¯
      */
-    void showHashInfo() {
-
-        int usedBuckets = 0;
-
-        int maxChain = 0;
-
-        int totalPeople = 0;
-
-
-        for (
-            int i = 0;
-            i < TABLE_SIZE;
-            i++
-            ) {
-
+     // è¿”å›å“ˆå¸Œè¡¨ä¿¡æ¯å­—ç¬¦ä¸²
+    wstring getHashInfo() {
+        int usedBuckets = 0, maxChain = 0, totalPeople = 0;
+        for (int i = 0; i < TABLE_SIZE; i++) {
             int chainLength = 0;
+            PersonNode* p = table[i];
+            if (p != NULL) usedBuckets++;
+            while (p != NULL) { chainLength++; totalPeople++; p = p->next; }
+            if (chainLength > maxChain) maxChain = chainLength;
+        }
+        double loadFactor = (double)totalPeople / TABLE_SIZE;
+        wostringstream woss;
+        woss << L"æ•£åˆ—è¡¨å¤§å°ï¼š" << TABLE_SIZE << L"    ";
+        woss << L"äººç‰©æ€»æ•°ï¼š" << totalPeople << L"    ";
+        woss << L"å·²ä½¿ç”¨æ¡¶æ•°ï¼š" << usedBuckets << L"\r\n";
+        woss << L"æœ€é•¿å†²çªé“¾ï¼š" << maxChain << L"    ";
+        woss << L"è£…å¡«å› å­ï¼š" << fixed << setprecision(4) << loadFactor;
+        return woss.str();
+    }
 
-            PersonNode* p =
-                table[i];
-
-
-            if (p != NULL) {
-
-                usedBuckets++;
-            }
-
-
+    // è·å–æ‰€æœ‰äººçš„å‡ºåœºæ¬¡æ•°æ’è¡Œï¼ˆGUIç‰ˆæ–°å¢åŠŸèƒ½ï¼‰
+    wstring getRanking() {
+        struct RankItem { int id; wstring name; int count; };
+        RankItem items[15];
+        int cnt = 0;
+        for (int i = 0; i < TABLE_SIZE; i++) {
+            PersonNode* p = table[i];
             while (p != NULL) {
-
-                chainLength++;
-
-                totalPeople++;
-
+                items[cnt].id = p->id;
+                items[cnt].name = p->name;
+                items[cnt].count = p->count;
+                cnt++;
                 p = p->next;
             }
-
-
-            if (
-                chainLength >
-                maxChain
-                ) {
-
-                maxChain =
-                    chainLength;
-            }
         }
-
-
-        double loadFactor =
-            (double)totalPeople /
-            TABLE_SIZE;
-
-
-        wcout << L"\n";
-
-        wcout
-            << L"========== É¢ÁĞ±íĞÅÏ¢ ==========\n";
-
-
-        wcout
-            << L"É¢ÁĞ±íÈİÁ¿£º"
-            << TABLE_SIZE
-            << L"\n";
-
-
-        wcout
-            << L"ÈËÎïÊıÁ¿£º"
-            << totalPeople
-            << L"\n";
-
-
-        wcout
-            << L"ÒÑÊ¹ÓÃÍ°ÊıÁ¿£º"
-            << usedBuckets
-            << L"\n";
-
-
-        wcout
-            << L"×î³¤³åÍ»Á´³¤¶È£º"
-            << maxChain
-            << L"\n";
-
-
-        wcout
-            << L"×°ÔØÒò×Ó£º"
-            << fixed
-            << setprecision(4)
-            << loadFactor
-            << L"\n";
-
-
-        wcout
-            << L"================================\n";
+        for (int i = 0; i < cnt - 1; i++)
+            for (int j = 0; j < cnt - 1 - i; j++)
+                if (items[j].count < items[j + 1].count) {
+                    RankItem tmp = items[j]; items[j] = items[j + 1]; items[j + 1] = tmp;
+                }
+        wostringstream woss;
+        woss << L"========== äººç‰©å‡ºåœºæ¬¡æ•°æ’è¡Œ ==========\r\n";
+        for (int i = 0; i < cnt; i++) {
+            woss << L"ç¬¬" << (i + 1) << L"åï¼š" << items[i].name
+                << L"  â€”  " << items[i].count << L" æ¬¡\r\n";
+        }
+        woss << L"======================================\r\n";
+        return woss.str();
     }
 };
 
 
 /*
- * ÈËÎï¿â
+ * äººç‰©åº“
  *
- * displayName£º
- * ÓÃÓÚ¿ØÖÆÌ¨ÏÔÊ¾¡£
+ * displayNameï¼š
+ * ç”¨äºæ§åˆ¶å°æ˜¾ç¤ºã€‚
  *
- * searchName£º
- * UTF-8±àÂë£¬ÓÃÓÚTXTÎÄ¼şËÑË÷¡£
+ * searchNameï¼š
+ * UTF-8ç¼–ç ï¼Œç”¨äºTXTæ–‡ä»¶æœç´¢ã€‚
  */
 PersonInfo people[] = {
 
     {
         1,
-        L"Áõ±¸",
+        L"åˆ˜å¤‡",
         "\xE5\x88\x98\xE5\xA4\x87"
     },
 
     {
         2,
-        L"¹ØÓğ",
+        L"å…³ç¾½",
         "\xE5\x85\xB3\xE7\xBE\xBD"
     },
 
     {
         3,
-        L"ÕÅ·É",
+        L"å¼ é£",
         "\xE5\xBC\xA0\xE9\xA3\x9E"
     },
 
     {
         4,
-        L"Öî¸ğÁÁ",
+        L"è¯¸è‘›äº®",
         "\xE8\xAF\xB8\xE8\x91\x9B\xE4\xBA\xAE"
     },
 
     {
         5,
-        L"²Ü²Ù",
+        L"æ›¹æ“",
         "\xE6\x9B\xB9\xE6\x93\x8D"
     },
 
     {
         6,
-        L"ËïÈ¨",
+        L"å­™æƒ",
         "\xE5\xAD\x99\xE6\x9D\x83"
     },
 
     {
         7,
-        L"ÕÔÔÆ",
+        L"èµµäº‘",
         "\xE8\xB5\xB5\xE4\xBA\x91"
     },
 
     {
         8,
-        L"ÖÜè¤",
+        L"å‘¨ç‘œ",
         "\xE5\x91\xA8\xE7\x91\x9C"
     },
 
     {
         9,
-        L"Ë¾ÂíÜ²",
+        L"å¸é©¬æ‡¿",
         "\xE5\x8F\xB8\xE9\xA9\xAC\xE6\x87\xBF"
     },
 
     {
         10,
-        L"ÂÀ²¼",
+        L"å•å¸ƒ",
         "\xE5\x90\x95\xE5\xB8\x83"
     },
 
     {
         11,
-        L"»ÆÖÒ",
+        L"é»„å¿ ",
         "\xE9\xBB\x84\xE5\xBF\xA0"
     },
 
     {
         12,
-        L"Âí³¬",
+        L"é©¬è¶…",
         "\xE9\xA9\xAC\xE8\xB6\x85"
     },
 
     {
         13,
-        L"ÎºÑÓ",
+        L"é­å»¶",
         "\xE9\xAD\x8F\xE5\xBB\xB6"
     },
 
     {
         14,
-        L"½ªÎ¬",
+        L"å§œç»´",
         "\xE5\xA7\x9C\xE7\xBB\xB4"
     },
 
     {
         15,
-        L"¶­×¿",
+        L"è‘£å“",
         "\xE8\x91\xA3\xE5\x8D\x93"
     }
 };
@@ -595,7 +499,7 @@ sizeof(people) /
 sizeof(people[0]);
 
 
-/* »ñÈ¡ÎÄ¼ş´óĞ¡ */
+/* è·å–æ–‡ä»¶å¤§å° */
 long long getFileSize(
     const string& filename
 ) {
@@ -616,7 +520,7 @@ long long getFileSize(
 }
 
 
-/* ÅĞ¶ÏUTF-8×Ö·û³¤¶È */
+/* åˆ¤æ–­UTF-8å­—ç¬¦é•¿åº¦ */
 int utf8CharLength(
     unsigned char c
 ) {
@@ -650,7 +554,7 @@ int utf8CharLength(
 
 
 /*
- * Í³¼ÆÈËÎï
+ * ç»Ÿè®¡äººç‰©
  */
 void statistics(
     const string& text,
@@ -689,7 +593,7 @@ void statistics(
 
 
             /*
-             * ¼ÆËã×Ö·ûÎ»ÖÃ
+             * è®¡ç®—å­—ç¬¦ä½ç½®
              */
             long long charPosition = 0;
 
@@ -723,7 +627,7 @@ void statistics(
 
 
             /*
-             * ±£´æ³öÏÖ¼ÇÂ¼
+             * ä¿å­˜å‡ºç°è®°å½•
              */
             hashTable.addOccurrence(
                 people[i].id,
@@ -735,7 +639,7 @@ void statistics(
 
 
             /*
-             * ´Óµ±Ç°ÈËÎïºóÃæ¼ÌĞøËÑË÷
+             * ä»å½“å‰äººç‰©åé¢ç»§ç»­æœç´¢
              */
             start =
                 position +
@@ -743,414 +647,245 @@ void statistics(
         }
     }
 }
+// ========== æ§ä»¶ID ==========
+#define IDC_FILEEDIT    1001
+#define IDC_BROWSE      1002
+#define IDC_START       1003
+#define IDC_PERSONLIST  1004
+#define IDC_QUERYBTN    1005
+#define IDC_RESULT      1006
+#define IDC_HASHINFO    1007
+#define IDC_STATUSBAR   1008
 
-
-/* ÏÔÊ¾ÈËÎï¿â */
-void showPeople() {
-
-    wcout << L"\n";
-
-    wcout
-        << L"========== ÈËÎï¿â ==========\n";
-
-
-    for (
-        int i = 0;
-        i < PEOPLE_COUNT;
-        i++
-        ) {
-
-        wcout
-            << setw(2)
-            << people[i].id
-            << L". "
-            << people[i].displayName
-            << L"\n";
-    }
-
-
-    wcout
-        << L"============================\n";
+// ========== ç¼–ç è½¬æ¢è¾…åŠ©å‡½æ•°ï¼ˆGUIéœ€è¦å®½å­—ç¬¦ï¼‰ ==========
+wstring utf8ToWstring(const string& utf8) {
+    if (utf8.empty()) return L"";
+    int len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, NULL, 0);
+    wstring result(len, L'\0');
+    MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, &result[0], len);
+    if (!result.empty() && result.back() == L'\0') result.pop_back();
+    return result;
 }
 
-
-/* ÏÔÊ¾²Ëµ¥ */
-void showMenu() {
-
-    wcout << L"\n";
-
-    wcout
-        << L"========================================\n";
-
-    wcout
-        << L"          ¾ç±¾ÈËÎïÍ³¼ÆÏµÍ³\n";
-
-    wcout
-        << L"========================================\n";
-
-    wcout
-        << L"1. ²éÑ¯ÈËÎï\n";
-
-    wcout
-        << L"2. ÏÔÊ¾ÈËÎï¿â\n";
-
-    wcout
-        << L"3. ÏÔÊ¾É¢ÁĞ±íĞÅÏ¢\n";
-
-    wcout
-        << L"0. ÍË³öÏµÍ³\n";
-
-    wcout
-        << L"========================================\n";
-
-    wcout
-        << L"ÇëÑ¡Ôñ£º";
+string wstringToAnsi(const wstring& wstr) {
+    if (wstr.empty()) return "";
+    int len = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+    string result(len, '\0');
+    WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &result[0], len, NULL, NULL);
+    if (!result.empty() && result.back() == '\0') result.pop_back();
+    return result;
 }
 
+// ========== å…¨å±€å˜é‡ ==========
+HashTable g_hashTable;
+bool g_statDone = false;
+HWND g_hFileEdit, g_hBrowseBtn, g_hStartBtn;
+HWND g_hPersonList, g_hQueryBtn, g_hResultEdit, g_hHashInfoStatic;
+HWND g_hStatusBar;
+HFONT g_hFont;
 
-/* Ö÷º¯Êı */
-int main() {
-
-    /*
-     * Windows Unicode¿ØÖÆÌ¨Ä£Ê½
-     */
-    _setmode(
-        _fileno(stdout),
-        _O_U16TEXT
-    );
-
-    _setmode(
-        _fileno(stdin),
-        _O_U16TEXT
-    );
-
-
-    ios::sync_with_stdio(false);
-
-    wcin.tie(NULL);
-
-    wcout.tie(NULL);
-
-
-    wcout
-        << L"========================================\n";
-
-    wcout
-        << L"          ¾ç±¾ÈËÎïÍ³¼ÆÏµÍ³\n";
-
-    wcout
-        << L"========================================\n";
-
-
-    /*
-     * ÊäÈëTXTÎÄ¼şÂ·¾¶
-     */
-    wstring wfilename;
-
-
-    wcout
-        << L"ÇëÊäÈëµç×ÓÊéTXTÎÄ¼şÂ·¾¶£º"
-        << flush;
-
-
-    getline(
-        wcin,
-        wfilename
-    );
-
-
-    /*
-     * Windows¿í×Ö·û´®Â·¾¶×ª»»
-     */
-    int len =
-        WideCharToMultiByte(
-            CP_ACP,
-            0,
-            wfilename.c_str(),
-            -1,
-            NULL,
-            0,
-            NULL,
-            NULL
-        );
-
-
-    if (len <= 0) {
-
-        wcout
-            << L"\nÎÄ¼şÂ·¾¶×ª»»Ê§°Ü£¡\n";
-
-        return 1;
+// ========== æ‰§è¡Œç»Ÿè®¡ï¼ˆå¯¹åº”æ§åˆ¶å°ç‰ˆmainé‡Œçš„ç»Ÿè®¡é€»è¾‘ï¼‰ ==========
+void doStatistics(HWND hWnd) {
+    wchar_t wpath[MAX_PATH];
+    GetWindowTextW(g_hFileEdit, wpath, MAX_PATH);
+    if (wcslen(wpath) == 0) {
+        MessageBoxW(hWnd, L"è¯·å…ˆé€‰æ‹©æˆ–è¾“å…¥å‰§æœ¬TXTæ–‡ä»¶è·¯å¾„ï¼", L"æç¤º", MB_ICONWARNING);
+        return;
     }
-
-
-    string filename(
-        len,
-        '\0'
-    );
-
-
-    WideCharToMultiByte(
-        CP_ACP,
-        0,
-        wfilename.c_str(),
-        -1,
-        &filename[0],
-        len,
-        NULL,
-        NULL
-    );
-
-
-    if (
-        !filename.empty() &&
-        filename.back() == '\0'
-        ) {
-
-        filename.pop_back();
-    }
-
-
-    /*
-     * »ñÈ¡ÎÄ¼ş´óĞ¡
-     */
-    long long fileSize =
-        getFileSize(filename);
-
-
+    string filename = wstringToAnsi(wpath);
+    long long fileSize = getFileSize(filename);
     if (fileSize == -1) {
-
-        wcout
-            << L"\nÎÄ¼ş´ò¿ªÊ§°Ü£¡\n";
-
-        wcout
-            << L"Çë¼ì²éÎÄ¼şÂ·¾¶ÊÇ·ñÕıÈ·¡£\n";
-
-        return 1;
+        MessageBoxW(hWnd, L"æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼è¯·æ£€æŸ¥æ–‡ä»¶è·¯å¾„æ˜¯å¦æ­£ç¡®ã€‚", L"é”™è¯¯", MB_ICONERROR);
+        return;
     }
-
-
-    wcout
-        << L"\nÎÄ¼ş¶ÁÈ¡³É¹¦£¡\n";
-
-
-    wcout
-        << L"ÎÄ¼ş´óĞ¡£º"
-        << fixed
-        << setprecision(2)
-        << (double)fileSize /
-        1024.0 /
-        1024.0
-        << L" MB\n";
-
-
-    /*
-     * ¼ì²éÎÄ¼ş´óĞ¡ÊÇ·ñ´óÓÚ1MB
-     */
-    if (
-        fileSize <=
-        1024 * 1024
-        ) {
-
-        wcout
-            << L"\n¾¯¸æ£ºµ±Ç°ÎÄ¼ş´óĞ¡Ã»ÓĞ³¬¹ı1MB¡£\n";
-
-
-        wcout
-            << L"¸ù¾İ¿Î³ÌÉè¼ÆÒªÇó£¬"
-            << L"ÇëÊ¹ÓÃ´óÓÚ1MBµÄTXTµç×ÓÊé¡£\n";
-
-
-        return 1;
+    if (fileSize <= 1024 * 1024) {
+        wchar_t msg[256];
+        swprintf_s(msg, L"è­¦å‘Šï¼šå½“å‰æ–‡ä»¶å¤§å°ä¸º %.2f MBï¼Œæ²¡æœ‰è¶…è¿‡1MBï¼\nè¯·ä½¿ç”¨å¤§äº1MBçš„TXTæ–‡æœ¬æ–‡ä»¶ã€‚",
+            (double)fileSize / 1024.0 / 1024.0);
+        MessageBoxW(hWnd, msg, L"æ–‡ä»¶è¿‡å°", MB_ICONWARNING);
+        return;
     }
-
-
-    /*
-     * ´ò¿ªTXTÎÄ¼ş
-     */
-    ifstream file(
-        filename.c_str(),
-        ios::binary
-    );
-
-
-    if (!file) {
-
-        wcout
-            << L"ÎÄ¼ş´ò¿ªÊ§°Ü£¡\n";
-
-        return 1;
-    }
-
-
-    /*
-     * Õû¸öÎÄ¼ş¶ÁÈëÄÚ´æ
-     */
-    string text(
-        (istreambuf_iterator<char>(file)),
-        istreambuf_iterator<char>()
-    );
-
-
+    ifstream file(filename.c_str(), ios::binary);
+    if (!file) { MessageBoxW(hWnd, L"æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼", L"é”™è¯¯", MB_ICONERROR); return; }
+    string text((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
     file.close();
-
-
-    wcout
-        << L"ÎÄ±¾¶ÁÈ¡Íê³É£¡\n";
-
-
-    /*
-     * È¥³ıUTF-8 BOM
-     */
-    if (
-        text.size() >= 3 &&
-        (unsigned char)text[0] == 0xEF &&
-        (unsigned char)text[1] == 0xBB &&
-        (unsigned char)text[2] == 0xBF
-        ) {
-
-        text.erase(
-            0,
-            3
-        );
+    // å»é™¤BOM
+    if (text.size() >= 3 && (unsigned char)text[0] == 0xEF &&
+        (unsigned char)text[1] == 0xBB && (unsigned char)text[2] == 0xBF) {
+        text.erase(0, 3);
     }
+    g_hashTable.clear();
+    SendMessageW(g_hResultEdit, WM_SETTEXT, 0, (LPARAM)L"æ­£åœ¨ç»Ÿè®¡ï¼Œè¯·ç¨å€™...\r\n");
+    UpdateWindow(g_hResultEdit);
+    statistics(text, g_hashTable);  // è°ƒç”¨ä½ åŸæ¥çš„ç»Ÿè®¡å‡½æ•°ï¼
+    g_statDone = true;
 
+    // æ›´æ–°äººç‰©åˆ—è¡¨
+    SendMessageW(g_hPersonList, LB_RESETCONTENT, 0, 0);
+    for (int i = 0; i < PEOPLE_COUNT; i++) {
+        wchar_t item[64];
+        PersonNode* p = g_hashTable.find(people[i].searchName);
+        int cnt = p ? p->count : 0;
+        swprintf_s(item, L"%2d. %s  (%dæ¬¡)", people[i].id, people[i].displayName, cnt);
+        SendMessageW(g_hPersonList, LB_ADDSTRING, 0, (LPARAM)item);
+    }
+    wstring info = g_hashTable.getHashInfo();
+    SetWindowTextW(g_hHashInfoStatic, info.c_str());
+    wstring result = L"ç»Ÿè®¡å®Œæˆï¼\r\n\r\n";
+    result += g_hashTable.getRanking();
+    result += L"\r\n";
+    result += g_hashTable.getHashInfo();
+    result += L"\r\n\r\næç¤ºï¼šåœ¨å·¦ä¾§åˆ—è¡¨åŒå‡»äººç‰©ï¼Œæˆ–é€‰ä¸­åç‚¹å‡»ã€ŒæŸ¥è¯¢è¯¦æƒ…ã€æŒ‰é’®ï¼ŒæŸ¥çœ‹å‡ºåœºä½ç½®ã€‚";
+    SendMessageW(g_hResultEdit, WM_SETTEXT, 0, (LPARAM)result.c_str());
+    SendMessageW(g_hStatusBar, SB_SETTEXTW, 0, (LPARAM)L"ç»Ÿè®¡å®Œæˆ");
+}
 
-    wcout
-        << L"ÕıÔÚÍ³¼ÆÈËÎï£¬ÇëÉÔºò...\n";
+// ========== æŸ¥è¯¢é€‰ä¸­äººç‰©ï¼ˆå¯¹åº”æ§åˆ¶å°ç‰ˆmainé‡Œçš„æŸ¥è¯¢é€»è¾‘ï¼‰ ==========
+void doQuery() {
+    if (!g_statDone) {
+        SendMessageW(g_hResultEdit, WM_SETTEXT, 0, (LPARAM)L"è¯·å…ˆç‚¹å‡»ã€Œå¼€å§‹ç»Ÿè®¡ã€æŒ‰é’®ï¼\r\n");
+        return;
+    }
+    int sel = (int)SendMessageW(g_hPersonList, LB_GETCURSEL, 0, 0);
+    if (sel == LB_ERR) {
+        SendMessageW(g_hResultEdit, WM_SETTEXT, 0, (LPARAM)L"è¯·å…ˆåœ¨å·¦ä¾§åˆ—è¡¨ä¸­é€‰æ‹©ä¸€ä¸ªäººç‰©ï¼\r\n");
+        return;
+    }
+    wstring result = g_hashTable.queryResult(people[sel].searchName);  // è°ƒç”¨ä½ æ”¹åçš„æŸ¥è¯¢æ–¹æ³•
+    SendMessageW(g_hResultEdit, WM_SETTEXT, 0, (LPARAM)result.c_str());
+    SendMessageW(g_hStatusBar, SB_SETTEXTW, 0, (LPARAM)L"æŸ¥è¯¢å®Œæˆ");
+}
 
-
-    /*
-     * ´´½¨É¢ÁĞ±í
-     */
-    HashTable hashTable;
-
-
-    /*
-     * ¿ªÊ¼Í³¼Æ
-     */
-    statistics(
-        text,
-        hashTable
-    );
-
-
-    wcout
-        << L"ÈËÎïÍ³¼ÆÍê³É£¡\n";
-
-
-    /*
-     * ÏÔÊ¾É¢ÁĞ±íĞÅÏ¢
-     */
-    hashTable.showHashInfo();
-
-
-    /*
-     * ÏµÍ³²Ëµ¥
-     */
-    while (true) {
-
-        showMenu();
-
-
-        int choice;
-
-
-        wcin >> choice;
-
-
-        wcin.ignore(
-            10000,
-            L'\n'
-        );
-
-
-        /*
-         * ÍË³ö
-         */
-        if (choice == 0) {
-
-            wcout
-                << L"\nÏµÍ³ÍË³ö¡£\n";
-
+// ========== çª—å£è¿‡ç¨‹ï¼ˆæ‰€æœ‰æ¶ˆæ¯åœ¨è¿™é‡Œå¤„ç†ï¼Œä»£æ›¿æ§åˆ¶å°ç‰ˆçš„èœå•å¾ªç¯ï¼‰ ==========
+LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+    switch (msg) {
+    case WM_CREATE: {
+        g_hFont = CreateFontW(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+            DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, L"å¾®è½¯é›…é»‘");
+        // æ–‡ä»¶é€‰æ‹©åŒº
+        CreateWindowW(L"STATIC", L"å‰§æœ¬æ–‡ä»¶ï¼š", WS_CHILD | WS_VISIBLE | SS_RIGHT,
+            10, 12, 70, 24, hWnd, NULL, NULL, NULL);
+        g_hFileEdit = CreateWindowW(L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            85, 10, 500, 26, hWnd, (HMENU)IDC_FILEEDIT, NULL, NULL);
+        g_hBrowseBtn = CreateWindowW(L"BUTTON", L"æµè§ˆ...", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            595, 9, 80, 28, hWnd, (HMENU)IDC_BROWSE, NULL, NULL);
+        g_hStartBtn = CreateWindowW(L"BUTTON", L"å¼€å§‹ç»Ÿè®¡", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            685, 9, 100, 28, hWnd, (HMENU)IDC_START, NULL, NULL);
+        // äººç‰©åˆ—è¡¨åŒº
+        CreateWindowW(L"STATIC", L"äººç‰©åˆ—è¡¨ï¼ˆåŒå‡»æŸ¥è¯¢ï¼‰ï¼š", WS_CHILD | WS_VISIBLE,
+            10, 48, 200, 20, hWnd, NULL, NULL, NULL);
+        g_hPersonList = CreateWindowW(L"LISTBOX", L"", WS_CHILD | WS_VISIBLE | WS_BORDER |
+            LBS_NOTIFY | LBS_NOINTEGRALHEIGHT | WS_VSCROLL,
+            10, 70, 220, 420, hWnd, (HMENU)IDC_PERSONLIST, NULL, NULL);
+        g_hQueryBtn = CreateWindowW(L"BUTTON", L"æŸ¥è¯¢è¯¦æƒ…", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+            10, 498, 220, 32, hWnd, (HMENU)IDC_QUERYBTN, NULL, NULL);
+        // ç»“æœåŒº
+        CreateWindowW(L"STATIC", L"ç»Ÿè®¡ç»“æœ / æŸ¥è¯¢è¯¦æƒ…ï¼š", WS_CHILD | WS_VISIBLE,
+            245, 48, 300, 20, hWnd, NULL, NULL, NULL);
+        g_hResultEdit = CreateWindowW(L"EDIT", L"æ¬¢è¿ä½¿ç”¨å‰§æœ¬äººç‰©ç»Ÿè®¡ç³»ç»Ÿï¼ˆGUIç‰ˆï¼‰ï¼\r\n\r\n"
+            L"ä½¿ç”¨æ­¥éª¤ï¼š\r\n"
+            L"1. ç‚¹å‡»ã€Œæµè§ˆ...ã€é€‰æ‹©å¤§äº1MBçš„UTF-8ç¼–ç å‰§æœ¬TXTæ–‡ä»¶\r\n"
+            L"2. ç‚¹å‡»ã€Œå¼€å§‹ç»Ÿè®¡ã€æŒ‰é’®\r\n"
+            L"3. åœ¨å·¦ä¾§äººç‰©åˆ—è¡¨ä¸­åŒå‡»äººç‰©ï¼ŒæŸ¥çœ‹å‡ºåœºæ¬¡æ•°å’Œä½ç½®\r\n\r\n"
+            L"æ ¸å¿ƒç®—æ³•ï¼šBKDRå“ˆå¸Œå‡½æ•° + é“¾åœ°å€æ³•æ•£åˆ—è¡¨ + UTF-8å­—ç¬¦ä½ç½®è®¡ç®—",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_MULTILINE |
+            ES_READONLY | ES_AUTOVSCROLL | WS_VSCROLL,
+            245, 70, 540, 420, hWnd, (HMENU)IDC_RESULT, NULL, NULL);
+        // å“ˆå¸Œè¡¨ä¿¡æ¯
+        g_hHashInfoStatic = CreateWindowW(L"STATIC", L"æ•£åˆ—è¡¨ä¿¡æ¯ï¼šï¼ˆç»Ÿè®¡åæ˜¾ç¤ºï¼‰",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            245, 498, 540, 32, hWnd, (HMENU)IDC_HASHINFO, NULL, NULL);
+        // çŠ¶æ€æ 
+        INITCOMMONCONTROLSEX iccx;
+        iccx.dwSize = sizeof(iccx);
+        iccx.dwICC = ICC_BAR_CLASSES;
+        InitCommonControlsEx(&iccx);
+        g_hStatusBar = CreateWindowExW(0, STATUSCLASSNAMEW, L"å°±ç»ª",
+            WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP,
+            0, 0, 0, 0, hWnd, (HMENU)IDC_STATUSBAR, NULL, NULL);
+        // è®¾ç½®æ‰€æœ‰æ§ä»¶å­—ä½“
+        EnumChildWindows(hWnd, [](HWND hChild, LPARAM lParam) -> BOOL {
+            SendMessageW(hChild, WM_SETFONT, (WPARAM)lParam, TRUE);
+            return TRUE;
+            }, (LPARAM)g_hFont);
+        break;
+    }
+    case WM_COMMAND: {
+        switch (LOWORD(wParam)) {
+        case IDC_BROWSE: {
+            OPENFILENAMEW ofn;
+            wchar_t szFile[MAX_PATH] = L"";
+            ZeroMemory(&ofn, sizeof(ofn));
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = hWnd;
+            ofn.lpstrFilter = L"æ–‡æœ¬æ–‡ä»¶ (*.txt)\0*.txt\0æ‰€æœ‰æ–‡ä»¶ (*.*)\0*.*\0";
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = MAX_PATH;
+            ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+            ofn.lpstrTitle = L"é€‰æ‹©å‰§æœ¬TXTæ–‡ä»¶";
+            if (GetOpenFileNameW(&ofn)) SetWindowTextW(g_hFileEdit, szFile);
             break;
         }
-
-
-        /*
-         * ²éÑ¯ÈËÎï
-         */
-        else if (choice == 1) {
-
-            showPeople();
-
-
-            int id;
-
-
-            wcout
-                << L"ÇëÊäÈëÒª²éÑ¯µÄÈËÎï±àºÅ£º"
-                << flush;
-
-
-            wcin >> id;
-
-
-            wcin.ignore(
-                10000,
-                L'\n'
-            );
-
-
-            if (
-                id < 1 ||
-                id > PEOPLE_COUNT
-                ) {
-
-                wcout
-                    << L"ÈËÎï±àºÅ´íÎó£¡\n";
-            }
-            else {
-
-                /*
-                 * ¸ù¾İ±àºÅÕÒµ½ÈËÎï
-                 * ÔÙ°ÑUTF-8Ãû³Æ½»¸øÉ¢ÁĞ±í²éÑ¯
-                 */
-                hashTable.query(
-                    people[id - 1].searchName
-                );
-            }
+        case IDC_START: doStatistics(hWnd); break;
+        case IDC_QUERYBTN: doQuery(); break;
+        case IDC_PERSONLIST:
+            if (HIWORD(wParam) == LBN_DBLCLK) doQuery();
+            break;
         }
-
-
-        /*
-         * ÏÔÊ¾ÈËÎï¿â
-         */
-        else if (choice == 2) {
-
-            showPeople();
-        }
-
-
-        /*
-         * ÏÔÊ¾É¢ÁĞ±íĞÅÏ¢
-         */
-        else if (choice == 3) {
-
-            hashTable.showHashInfo();
-        }
-
-
-        /*
-         * ÆäËûÊäÈë
-         */
-        else {
-
-            wcout
-                << L"ÊäÈë´íÎó£¬ÇëÖØĞÂÑ¡Ôñ¡£\n";
-        }
+        break;
     }
-
-
+    case WM_SIZE:
+        SendMessageW(g_hStatusBar, WM_SIZE, 0, 0);
+        break;
+    case WM_DESTROY:
+        if (g_hFont) DeleteObject(g_hFont);
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProcW(hWnd, msg, wParam, lParam);
+    }
     return 0;
 }
+
+// ========== ç¨‹åºå…¥å£ï¼ˆä»£æ›¿main()ï¼‰ ==========
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    WNDCLASSEXW wc;
+    ZeroMemory(&wc, sizeof(wc));
+    wc.cbSize = sizeof(wc);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = WndProc;
+    wc.hInstance = hInstance;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+    wc.lpszClassName = L"ScriptStatGUI";
+    wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    if (!RegisterClassExW(&wc)) {
+        MessageBoxW(NULL, L"çª—å£ç±»æ³¨å†Œå¤±è´¥ï¼", L"é”™è¯¯", MB_ICONERROR);
+        return 1;
+    }
+    HWND hWnd = CreateWindowExW(
+        WS_EX_WINDOWEDGE, L"ScriptStatGUI",
+        L"å‰§æœ¬äººç‰©ç»Ÿè®¡ç³»ç»Ÿ â€” åŸºäºæ•£åˆ—è¡¨çš„äººç‰©å‡ºåœºç»Ÿè®¡ï¼ˆGUIç‰ˆï¼‰",
+        WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX,
+        CW_USEDEFAULT, CW_USEDEFAULT, 810, 600,
+        NULL, NULL, hInstance, NULL);
+    if (!hWnd) {
+        MessageBoxW(NULL, L"çª—å£åˆ›å»ºå¤±è´¥ï¼", L"é”™è¯¯", MB_ICONERROR);
+        return 1;
+    }
+    ShowWindow(hWnd, nCmdShow);
+    UpdateWindow(hWnd);
+    MSG msg;
+    while (GetMessageW(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
+    return (int)msg.wParam;
+}
+
+
+
+
+
+
